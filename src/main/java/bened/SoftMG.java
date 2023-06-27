@@ -864,7 +864,7 @@ public class SoftMG {
                 }
 
                 if (!_found) {
-                    System.out.println("insert force reparing_(sftTrxID=null)! amo="+trx.getAmount()+" h:"+_height);
+                    Logger.logDebugMessage("insert force reparing_(sftTrxID=null)! amo="+trx.getAmount()+" h:"+_height);
                     insertForce(trx.getSoftMGBlockID(), null, trx.getAmount(), trx.getReceiver(), _height - 1);
                 }
                 String qwery = "update force set amount=?, tech=?, stxid=?  where  stxid=? and amount=? and to_id=? and txid is null";
@@ -890,13 +890,12 @@ public class SoftMG {
                     int count = statement.executeUpdate();
                     if (count > 1) {
                         Logger.logDebugMessage("AHTUNG NO REPAIR !!! upd c=" + count);
-                        System.out.println("AHTUNG NO REPAIR !!! upd c=" + count + " SoftMGTxID==nulll");
                         if (count > 1) {
                             try (PreparedStatement stmtd = conn.prepareStatement("delete from force where amount=? and to_id=? and txid is null and stxid is null limit 1")) {
                                 stmtd.setLong(1, trx.getAmount());
                                 stmtd.setLong(2, trx.getReceiver());
                                 count = stmtd.executeUpdate();
-                                System.out.println(" delete over 1 trx t0 if full count:" + count);
+                                Logger.logDebugMessage(" delete over 1 trx t0 if full count:" + count);
                                 povtor = 0;
                                 return count == 1;
                             } catch (Exception e) {
@@ -920,7 +919,7 @@ public class SoftMG {
                     }
                 }
                 if (!_found) {
-                    System.out.println("insert force reparing_(softtrxId)! amo="+trx.getAmount()+" h:"+_height);
+                    Logger.logDebugMessage("insert force reparing_(softtrxId)! amo="+trx.getAmount()+" h:"+_height);
                     insertForce(trx.getSoftMGBlockID(), trx.getSoftMGTxID(), trx.getAmount(), trx.getReceiver(), _height - 1);
                 }
                 try (PreparedStatement statement = conn.prepareStatement("update force set amount=?, tech=?, stxid=?  where  txid=? and to_id=?")) {
@@ -935,14 +934,13 @@ public class SoftMG {
                             stmtd.setLong(1, trx.getSoftMGTxID());
                             stmtd.setLong(2, trx.getReceiver());
                             count = stmtd.executeUpdate();
-                            System.out.println(" delete meny 1 trx t1 if full count:" + count);
+                            Logger.logDebugMessage(" delete meny 1 trx t1 if full count:" + count);
                             povtor = 0;
                             return count == 1;
                         }
                     }
                 }
             }
-            System.out.println("SoftTxID=" + Long.toUnsignedString(trx.getID()) + " REPAIRED selamo("+_amo+")-txamo("+trx.getAmount()+")="+( _amo-trx.getAmount())+"    of blk:"+_height );
             return true;
         }
         Logger.logDebugMessage("No repaired");
