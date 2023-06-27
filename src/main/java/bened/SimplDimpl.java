@@ -46,7 +46,7 @@ public class SimplDimpl {
 
 
 
-     public static boolean verifyHit(BigInteger hit, BigInteger effectiveBalance, Block previousBlock, int timestamp) {
+    public static boolean verifyHit(BigInteger hit, BigInteger effectiveBalance, Block previousBlock, int timestamp) {
         
         int elapsedTime = timestamp - previousBlock.getTimestamp();
         if (elapsedTime <= 0) {
@@ -61,19 +61,9 @@ public class SimplDimpl {
         BigInteger target = prevTarget.add(effectiveBaseTarget);
         boolean _verhit =hit.compareTo(target) < 0
                 && (hit.compareTo(prevTarget) >= 0
-                || (Constants.isTestnet ? elapsedTime > 600 : elapsedTime > techForgeDelayMs/30) //16,6 mnt -- 1000 sek
+                || (Constants.isTestnet ? elapsedTime > 600 : elapsedTime > 3600) 
                 || Constants.isOffline);
         
-        if(!_verhit){
-            System.out.println("\n\n----verifyhit h:"+(previousBlock.getHeight()+1)+" ts:"+previousBlock.getTimestamp());        
-            System.out.println("----verifyhit ="+(hit.compareTo(target)) +" hit="+hit+ " target="+target);
-            System.out.println("----verifyhit1 ="+ hit.compareTo(prevTarget)  +" prevtarget="+prevTarget+ " \n----elapsedtime="+elapsedTime+""); 
-            if((previousBlock.getHeight()+1)<LAST_KNOWN_BLOCK){
-                _verhit = hit.compareTo(target) < 0 && Constants.verbadtime(previousBlock.getTimestamp()); 
-                System.out.println("----verifyhit2 =pass!!!");
-            }
-        }
-
         return _verhit; 
     }
      

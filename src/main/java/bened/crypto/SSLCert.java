@@ -242,9 +242,8 @@ public class SSLCert {
 
         // finally, sign the certificate with the private key of the same KeyPair
         cert = certGen.generate(keyPair.getPrivate(), "BC");
-            System.out.println("sert = "+cert.toString());
         }catch(Exception e){
-            System.out.println("\n----error ssl e="+e);
+            Logger.logErrorMessage("\n----error ssl e="+e);
         }finally{
              return cert;
         }

@@ -210,7 +210,7 @@ public final class TransactionImpl implements Transaction {
 
         BuilderImpl index(int index) {
             if(index<0){
-                System.out.println("777");
+                Logger.logErrorMessage("wtf? cod #777 index<0");
             }
             this.index = index;
             return this;

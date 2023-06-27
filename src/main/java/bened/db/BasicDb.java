@@ -155,16 +155,17 @@ public class BasicDb {
         if (!initialized) {
             return;
         }
-        FullTextTrigger.setActive(false);
-        try(Connection con = cp.getConnection();
-            Statement stmt = con.createStatement();){
-            stmt.execute("SHUTDOWN");
-            //stmt.execute("SHUTDOWN COMPACT");
-            //stmt.execute("SHUTDOWN DEFRAG");
+        try{
+            FullTextTrigger.setActive(false);
+            Connection con = cp.getConnection();
+            Statement stmt = con.createStatement();
+            stmt.execute("SHUTDOWN COMPACT");
+            if(stmt!=null)stmt.close();
+            if(con!=null && con.isValid(loginTimeout))con.close();
             Logger.logShutdownMessage("Database shutdown completed");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Logger.logShutdownMessage("shutdown db trouble:"+e.toString(), e);
-        }
+        }       
     }
 
     public void analyzeTables() {

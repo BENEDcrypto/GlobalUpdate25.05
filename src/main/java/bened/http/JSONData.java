@@ -173,6 +173,7 @@ public final class JSONData {
         json.put("application", peer.getApplication());
         json.put("version", peer.getVersion());
         json.put("platform", peer.getPlatform());
+        json.put("subversion", peer.getSubversion());
         if (peer.getApiPort() != 0) {
             json.put("apiPort", peer.getApiPort());
         }

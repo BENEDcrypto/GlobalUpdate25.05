@@ -259,6 +259,7 @@ public final class Peers {
         json.put("application", Bened.APPLICATION);
         json.put("version", Bened.VERSION);
         json.put("platform", Peers.myPlatform);
+        json.put("subversion", Bened.SUBVERSION);
         json.put("shareAddress", Peers.shareMyAddress);
         if (!Constants.ENABLE_PRUNING && Constants.INCLUDE_EXPIRED_PRUNABLE) {
             servicesList.add(Peer.Service.PRUNABLE);

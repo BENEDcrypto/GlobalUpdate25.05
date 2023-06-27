@@ -89,6 +89,12 @@ final class GetInfo extends PeerServlet.PeerRequestHandler {
             platform = "?";
         }
         peerImpl.setPlatform(platform.trim());
+        
+        String subversion = (String)request.get("subversion");     
+        if (subversion == null) {
+            subversion = "?";
+        }
+        peerImpl.setSubversion(subversion.trim());
 
         peerImpl.setShareAddress(Boolean.TRUE.equals(request.get("shareAddress")));
 

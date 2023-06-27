@@ -308,7 +308,7 @@ public class FullTextTrigger implements Trigger, TransactionalDb.TransactionCall
                     + "FOR EACH ROW CALL \"%s\"",
                     upperTable, tableName, FullTextTrigger.class.getName())); 
         }catch(Exception e){
-            System.out.println("createftriget err w33:"+e);
+            Logger.logErrorMessage("createftriget err w33",e);
         }
         //
         // Index the table
@@ -513,7 +513,7 @@ public class FullTextTrigger implements Trigger, TransactionalDb.TransactionCall
                     index++;
                 }
             }catch(Exception e){
-                System.out.println("triget init 001 e:"+e);
+                Logger.logErrorMessage("triget init 001 ",e);
             }
             if (dbColumn < 0) {
                 Logger.logErrorMessage("DB_ID column not found for table " + tableName);
@@ -543,7 +543,7 @@ public class FullTextTrigger implements Trigger, TransactionalDb.TransactionCall
                     }
                 }
             }catch(Exception e){
-                System.out.println("triget init 002 e:"+e);
+                Logger.logErrorMessage("triget init 002 ",e);
             }
             if (indexColumns.isEmpty()) {
                 Logger.logErrorMessage("No indexed columns found for table " + tableName);

@@ -5,7 +5,7 @@
 
     <groupId>bened</groupId>
     <artifactId>BenedMG</artifactId>
-    <version>2</version>
+    <version>1</version>
     <packaging>jar</packaging>
 
     <name>BNDCore_17fx_GIT+NoForg</name>

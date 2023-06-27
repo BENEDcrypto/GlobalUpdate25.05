@@ -25,11 +25,5 @@ public class Conc {
 
     public Conc() {
     }
-    
-    public Conc(boolean is1440) {
-        this();
-        if (is1440) {
-            LEFT_LINE = "update soft_1440 set amount=amount+? where id in (";
-        }
-    }
+   
 }

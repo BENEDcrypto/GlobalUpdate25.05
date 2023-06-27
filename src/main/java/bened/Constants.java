@@ -30,13 +30,13 @@ public final class Constants {
     public static final boolean isLightClient = Bened.getBooleanProperty("bened.isLightClient");
     public static final int defaultNumberOfForkConfirmations = Bened.getIntProperty(Constants.isTestnet
             ? "bened.testnetNumberOfForkConfirmations" : "bened.numberOfForkConfirmations");
- //   public static final String customLoginWarning = Bened.getStringProperty("bened.customLoginWarning", null, false, "UTF-8");
     
     // slowlemiti
     public static final int affil_struct = 100;
     public static int mindifforg = -10; // limit speed (ne umenshats)
     public static long techForgeDelayMs = 30000; 
-    public static final int LAST_KNOWN_BLOCK = 0; //683352; // без этого не начинает форжить с нуля //1440; // there was CHECKSUM_BLOCK_18; which is for height 251010
+    public static final int LAST_KNOWN_BLOCK = 19500; //683352; // без этого не начинает форжить с нуля //1440; // there was CHECKSUM_BLOCK_18; which is for height 251010
+    public static final int LAST_repair_BLOCK = 20764; 
     public static final int MAX_TIMEDRIFT = 15; // allow up to 15 s clock difference
     public static final int Allow_future_inVM = Bened.getIntProperty("bened.allowfuturevm", 0); // allow up to 15 s clock difference
     public static int downloadbchsize =720;
@@ -84,8 +84,8 @@ public static long getMIN_BASE_TARGET(int height) {
     return min;
 }   
     public static final int ENABLE_BLOCK_VERSION_PREVALIDATION = 71; // какаято превалидация - включается после этой высоты
-    public static final long MAX_BALANCE_Stop_mg_centesimo =  1000000000000000L;  //  после этой суммы парамайнинг выключается 1 000 000 000 000000L
-    public static final long MAX_softMG_PAYOUT_centesimo   =  100000000000000L;  //  максимальная выплата 100 000 000 000000L
+    public static final long MAX_BALANCE_Stop_mg_centesimo =  100000000000000L;  //  после этой суммы парамайнинг выключается 1 000 000 000 000000L
+    public static final long MAX_softMG_PAYOUT_centesimo   =      100000000000L;  //  максимальная выплата 100 000 000 000000L
     
 
     
@@ -212,24 +212,6 @@ public static long getMIN_BASE_TARGET(int height) {
         if(height<1)return INITIAL_BASE_TARGET;
         long IBT = BigInteger.valueOf(2).pow(63).divide(BigInteger.valueOf(BLOCK_TIME * (Account.getAccount(Genesis.CREATOR_ID).getBalanceNQT()*(-1)/ONE_BND) )).longValue();
         return IBT;
-    }
-
-    
-    // repaired blocks
-    public static HashSet<Integer> knowcurveblockheight = new HashSet<>(Arrays.asList(
-         -1,-2));
-    public static boolean verbadtime(long vertime){
-        // 664687 -- -- -- 682207  `
-        long a=-1, a1=1;
-        if(vertime>a&&vertime<a1){
-            return true;
-        }
-//        long b=37531495-1, b1=37531495+1;
-//        if(vertime>b&&vertime<b1){
-//            return true;
-//        }
-        //...//
-        return false;
     }
     
 

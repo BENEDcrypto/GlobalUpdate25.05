@@ -6,9 +6,9 @@ var bened;
 	SoftMG.prototype.calc = function (balance, amount, last, genesisBalance, forgePercent) {
             var payout = this.ordinary(balance, amount, last, Math.abs(genesisBalance), forgePercent);
 
-            if (payout > 100000000000000)  payout = 100000000000000;
+            if (payout > 100000000000)  payout = 100000000000;
 
-            if (payout + balance > 1000000000000000) payout = 1000000000000000 - balance;
+            if (payout + balance > 100000000000000) payout = 100000000000000 - balance;
 
 	    if (payout < 0)  payout = 0;
             return (payout / 1000000.0).toFixed(6);
@@ -44,7 +44,7 @@ var bened;
                 percent = 1;
             if (balance >= 1000000 && balance <= 9999999999)
                 percent = 0.1;
-            if (balance >= 10000000000 && balance <= 1000000000000000)
+            if (balance >= 10000000000 && balance <= 100000000000000)
                 percent = 0.19;
             if(percent>0 && forgePercent>0)percent=1;
 

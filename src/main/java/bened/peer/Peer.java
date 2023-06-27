@@ -70,6 +70,8 @@ public interface Peer extends Comparable<Peer> {
     String getApplication();
 
     String getPlatform();
+    
+    String getSubversion();
 
     String getSoftware();
 

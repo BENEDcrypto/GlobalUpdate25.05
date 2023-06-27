@@ -111,7 +111,7 @@ public final class ApizTop100accounts extends HttpServlet {
         index = 1;
         if(top100acc.isEmpty()){
            JSONObject jsus = new JSONObject();
-                jsus.put("balance", "blockchain is downloading... please wite...");
+                jsus.put("balance", "blockchain is downloading... please wait...");
                 jsus.put("effectivebalance", "--");
                 jsus.put("publickey", "--" );
                 jsus.put("address",  "--");

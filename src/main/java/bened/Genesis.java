@@ -16,7 +16,6 @@
 
 package bened;
 
-import bened.util.Convert;
 import java.util.TreeMap;
 
 public final class Genesis {

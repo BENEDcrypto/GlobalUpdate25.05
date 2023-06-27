@@ -68,6 +68,7 @@ final class PeerImpl implements Peer {
     private volatile boolean shareAddress;
     private volatile Hallmark hallmark;
     private volatile String platform;
+    private volatile String subversion;
     private volatile String application;
     private volatile int apiPort;
     private volatile int apiSSLPort;
@@ -205,6 +206,19 @@ final class PeerImpl implements Peer {
         this.platform = platform;
     }
 
+    @Override
+    public String getSubversion() {
+        return subversion;
+    }
+    
+    void setSubversion(String subversion) {
+        if (subversion != null && subversion.length() > (Bened.SUBVERSION.length()+4)) {
+            throw new IllegalArgumentException("Invalid subversion length: " + subversion.length());
+        }
+        this.subversion = subversion;
+    }
+    
+    
     @Override
     public String getSoftware() {
         return Convert.truncate(application, "?", 10, false)
@@ -662,6 +676,7 @@ final class PeerImpl implements Peer {
                 lastUpdated = lastConnectAttempt;
                 setVersion((String) response.get("version"));
                 setPlatform((String) response.get("platform"));
+                setSubversion((String) response.get("subversion"));
                 shareAddress = Boolean.TRUE.equals(response.get("shareAddress"));
                 analyzeHallmark((String) response.get("hallmark"));
 

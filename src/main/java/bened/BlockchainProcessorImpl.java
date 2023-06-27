@@ -1370,13 +1370,13 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream( slice_BCH ))) {
                 Genesis.nb_recipients = (TreeMap<Long, Long>) ois.readObject();
                 if (Genesis.nb_recipients.isEmpty()) {
-                    System.out.println("No rids recipients! Crash university ");
+                    Logger.logErrorMessage("No rids recipients! Crash university ");
                     System.exit(1);
                     new Throwable("all crash no first recipients");
                 }
             }catch(Exception e){
-                System.out.println("! Crash university! er : "+e);
-                Logger.logDebugMessage("Versia Bened 1.2.0.1 Tom1\nNo start SLICE \n system exit");
+                Logger.logErrorMessage("! Crash university! er : "+e);
+                Logger.logErrorMessage("Versia Bened 1.2.0.1 Tom1\nNo start SLICE \n system exit");
                 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./sls_BCH.rid_hold"))) {
                     oos.writeObject("hold");
                 } catch (Exception ex) {
@@ -1400,10 +1400,7 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
         Long obs_amount =0L;
         try {
            getBlockChainSlice();
-            //
             List<TransactionImpl> transactions = new ArrayList<>();
-            //for (int i = 0; i < Genesis.GENESIS_RECIPIENTS.length; i++) {
-            ///dobavim pervuyu mesgetrx - infu
             Appendix.Message infogen = new Appendix.Message("this is bened tom1 ,after 722023 block height, all balances from there", true);
             try {
                 TransactionImpl tr0mes= new TransactionImpl.BuilderImpl((byte) 0, Genesis.CREATOR_PUBLIC_KEY,
@@ -1414,7 +1411,6 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
                             .height(0)
                             .ecBlockHeight(0)
                             .ecBlockId(0)
-//                            .appendix(infogen)
                             .build();
                  byte[] _signatura = Crypto.sign(tr0mes.getUnsignedBytes(), Constants.GENESIS_SECRET_PHRASE);
                  tr0mes= new TransactionImpl.BuilderImpl((byte) 0, Genesis.CREATOR_PUBLIC_KEY,
@@ -1425,23 +1421,20 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
                             .signature(_signatura)
                             .height(0)
                             .ecBlockHeight(0)
-                            .ecBlockId(0)
-//                            .appendix(infogen)                         
+                            .ecBlockId(0)                         
                             .build();
                  
                     transactions.add(tr0mes);
             } catch (BNDException.ValidationException ex) {
-                Logger.logErrorMessage("Error generate SoftMining Bened Engine", ex);
+                Logger.logErrorMessage("Error Add genesis BLOCK", ex);
                 throw ex;
             }
-            //!!!!!
-            
-            System.out.println("add transactions ("+Genesis.nb_recipients.size()+")");
+            Logger.logInfoMessage("add transactions ("+Genesis.nb_recipients.size()+")");
             int shet=0;
             int shrec= Genesis.nb_recipients.size();
             for (Map.Entry<Long,Long> recip_ : Genesis.nb_recipients.entrySet()) {
                 if(++shet%5000==0){
-                        System.out.println("end withe  "+(shrec-shet));
+                        Logger.logInfoMessage("remained  "+(shrec-shet));
                     }
                 //sozdadim podpisi naletu
                 TransactionImpl transaction_nos = new TransactionImpl.BuilderImpl((byte) 0, Genesis.CREATOR_PUBLIC_KEY,
@@ -1460,7 +1453,6 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
                         Attachment.ORDINARY_PAYMENT)
                         .timestamp(0)
                         .recipientId(recip_.getKey())
-                        // -------[INIT #0] (COMMENT OUT)
                         .signature(signatura)
                         .height(0)
                         .ecBlockHeight(0)
@@ -1476,7 +1468,6 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
                 digest.update(transaction.bytes());
             }
 
-            
             BlockImpl _genesisBlock = new BlockImpl(-1, 0, 0, obs_amount, 0, transactions.size() * 128, digest.digest(),
                     Genesis.CREATOR_PUBLIC_KEY, new byte[32], Genesis.GENESIS_BLOCK_SIGNATURE, null, transactions);
             _genesisBlock.setPrevious(null);
@@ -1486,9 +1477,9 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
                     Genesis.CREATOR_PUBLIC_KEY, new byte[32], linegensig, null, transactions);
             genesisBlock.setPrevious(null);
             try {
-System.out.println("ADD GENESIS BLOCK");                
+                Logger.logInfoMessage("ADD GENESIS BLOCK");                
                 addBlock(genesisBlock);
-System.out.println("GENESIS BLOCK ADDed");                 
+                Logger.logInfoMessage("apply GENESIS BLOCK\n please wait...");                 
             } catch (BlockNotAcceptedException ex) {
                 ex.printStackTrace();
             }
@@ -1674,10 +1665,12 @@ System.out.println("GENESIS BLOCK ADDed");
             
             int schet=0;
             int shsi =  block.getTransactions().size();
-            if(shsi>500)System.out.println("apply Transactions ..."); 
+            if(shsi>500){
+                Logger.logInfoMessage("apply Transactions ("+shsi+")");
+            }
             for (TransactionImpl transaction : block.getTransactions()) {
                  if(++schet%1000==0){
-                        System.out.println("end aply trx "+(shsi-schet));
+                        Logger.logInfoMessage("trx left: "+(shsi-schet));
                     }
                 try {
                     transaction.apply();
@@ -1698,7 +1691,7 @@ System.out.println("GENESIS BLOCK ADDed");
                     throw new BlockchainProcessor.TransactionNotAcceptedException(e, transaction);
                 }
             }
-            if(shsi>500)System.out.println("Transactions applyed"); 
+            if(shsi>500)Logger.logInfoMessage("Transactions apply. please wait..."); 
             blockListeners.notify(block, Event.AFTER_BLOCK_APPLY);
             if (block.getTransactions().size() > 0) {
                 TransactionProcessorImpl.getInstance().notifyListeners(block.getTransactions(), TransactionProcessor.Event.ADDED_CONFIRMED_TRANSACTIONS);
@@ -2088,14 +2081,10 @@ System.out.println("GENESIS BLOCK ADDed");
                 if (trimpl != null && trimpl.getHeight() != block.getHeight()) {
                     continue;
                 }
-                if (transaction.getSenderId() != Genesis.CREATOR_ID && transaction.getFeeNQT() < Bened.softMG().getFixedFee(transaction)) {
-                    System.out.println(" ---- ---- ----- \nBlock not accept: fee is too low:"+block.getHeight()+"\ntrx:"+transaction.getJSONObject());
-                    throw new BlockNotAcceptedException(" Block not accept: fee is too low", block);
+                if (transaction.getSenderId() != Genesis.CREATOR_ID && transaction.getFeeNQT() != Bened.softMG().getFixedFee(transaction)) {
+                    throw new BlockNotAcceptedException(" Block not accept: fee is wrong("+transaction.getFeeNQT()+"vs"+Bened.softMG().getFixedFee(transaction)+")", block);
                 }
                 JSONObject json = null;
-//                if (!transaction.verifySignature()) {
-//                    throw new BlockNotAcceptedException(" Block not accept, tx not verifySignature", block);
-//                }
                 SMGBlock.Transaction pmTransacnion = null;
                 try {
                     if ((pmTransacnion = SoftMG.convert(transaction, block.getHeight())) == null) {
@@ -2118,7 +2107,6 @@ System.out.println("GENESIS BLOCK ADDed");
          
             List<SMGBlock.Payout> payouts = Bened.softMG().check( (block != null && block.getTransactions() != null && !block.getTransactions().isEmpty()) ?  pmBlock : null, block.getHeight(), pmBlock);
         } catch (HGException ex) {
-            //            Bened.getBlockchainProcessor().popOffTo(block.getHeight()-1);
             Logger.logErrorMessage("BlchProcImp mgChecker err check a#102 popoff (-1) "+(block.getHeight()-1));
             popOffTo(block.getHeight()-1);
             java.util.logging.Logger.getLogger(BlockchainProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
