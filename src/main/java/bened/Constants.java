@@ -36,7 +36,8 @@ public final class Constants {
     public static int mindifforg = -10; // limit speed (ne umenshats)
     public static long techForgeDelayMs = 30000; 
     public static final int LAST_KNOWN_BLOCK = 19500; //683352; // без этого не начинает форжить с нуля //1440; // there was CHECKSUM_BLOCK_18; which is for height 251010
-    public static final int LAST_repair_BLOCK = 20764; 
+    public static final int LAST_repair_BLOCK = 20764;
+    public static final int LAST_halMG_BLOCK = 23500;
     public static final int MAX_TIMEDRIFT = 15; // allow up to 15 s clock difference
     public static final int Allow_future_inVM = Bened.getIntProperty("bened.allowfuturevm", 0); // allow up to 15 s clock difference
     public static int downloadbchsize =720;

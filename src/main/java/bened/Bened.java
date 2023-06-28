@@ -54,9 +54,9 @@ public final class Bened {
         return softMG_;
     }
 
-    public static final String MINIMAL_COMPATIBLE_VERSION = "2.3.0.3"; 
-    public static final String VERSION = "2.3.0.4";
-    public static final String SUBVERSION = "NF_16270623";
+    public static final String MINIMAL_COMPATIBLE_VERSION = "2.3.0.4"; 
+    public static final String VERSION = "2.3.0.5";
+    public static final String SUBVERSION = "NF_16280623";
     public static final String APPLICATION = "BND";
 
     private static volatile Time time = new Time.EpochTime();

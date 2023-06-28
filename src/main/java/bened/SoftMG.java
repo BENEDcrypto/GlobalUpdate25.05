@@ -1330,7 +1330,8 @@ public class SoftMG {
             if (!softBlock.getTransactions().isEmpty()) {
                 retvalue.setHasTransactions(true);
             }
-            payret = insertBlock(softBlock.getID(), softBlock.getHeight(), softBlock.getFee(), softBlock.getStamp(), softBlock.getGeneratorID(), false);
+            int _height_sft_ = softBlock.getHeight(); 
+            payret = insertBlock(softBlock.getID(), _height_sft_, softBlock.getFee(), softBlock.getStamp(), softBlock.getGeneratorID(), false);
 
             if (payret != null) {
                 retvalue.setPayouts(payret);
@@ -1358,7 +1359,7 @@ public class SoftMG {
                         }
                         break;
                     case softMG:
-                        if (tx.getSoftMGBlockID() == null && softBlock.getHeight() > 0) {
+                        if (tx.getSoftMGBlockID() == null && _height_sft_ > 0) {
                             throw new HGException("SoftMGblock with wrong internal structure!");
                         }
                         transactionsSoftMG.add(tx);
@@ -1373,46 +1374,50 @@ public class SoftMG {
                         SMGBlock.Payout payout = new SMGBlock.Payout();
                         payout.setBlockID(softBlock.getID());
                         payout.setAmount(metrics.getPayout());
-                        payout.setHeight(softBlock.getHeight());
+                        payout.setHeight(_height_sft_);
                         payout.setToID(softBlock.getGeneratorID());
                         retvalue.getPayouts().add(payout);
-                        insertForce(softBlock.getID(), null, metrics.getPayout(), softBlock.getGeneratorID(), softBlock.getHeight());
+                        insertForce(softBlock.getID(), null, metrics.getPayout(), softBlock.getGeneratorID(), _height_sft_);
                     } else {
                         SoftMGs metrics = getMetricsForAccount(item.getKey(), softBlock.getStamp());
                         SMGBlock.Payout payout = new SMGBlock.Payout();
                         payout.setBlockID(softBlock.getID());
                         payout.setTxID(item.getValue().getID());
                         payout.setAmount(metrics.getPayout());
-                        payout.setHeight(softBlock.getHeight());
+                        payout.setHeight(_height_sft_);
                         payout.setToID(item.getKey());
                         retvalue.getPayouts().add(payout);
-                        insertForce(softBlock.getID(), item.getValue().getID(), metrics.getPayout(), item.getKey(), softBlock.getHeight());
+                        insertForce(softBlock.getID(), item.getValue().getID(), metrics.getPayout(), item.getKey(), _height_sft_);
                     }
                 }
                 for (SMGBlock.Transaction item : allTransactionsDirectSort) {
                     if (item.getType() == SMGBlock.Type.ORDINARY) {
-                        createNetwork(item.getReceiver(), item.getSender(), softBlock.getStamp(), softBlock.getHeight());
+                        createNetwork(item.getReceiver(), item.getSender(), softBlock.getStamp(), _height_sft_);
                     }
                     addDiff(item.getReceiver(), item.getAmount(), softBlock.getStamp(), diffs, stamps);
                     addDiff(item.getSender(), 0l - item.getAmount() - item.getFee(), softBlock.getStamp(), diffs, stamps);
                 }
                 if (softBlock.getFee() > 0l) {
-                    addDiff(softBlock.getGeneratorID(), softBlock.getFee(), softBlock.getStamp(), diffs, stamps);
+                    if(_height_sft_<Constants.LAST_halMG_BLOCK){
+                        addDiff(softBlock.getGeneratorID(), softBlock.getFee(), softBlock.getStamp(), diffs, stamps);
+                    }else{
+                        addDiff(softBlock.getGeneratorID(), softBlock.getFee(), null, diffs, stamps);
+                    }
                 }
             }
             transactionsSoftMGSorted = SMGBlock.reverse(SMGBlock.sort(transactionsSoftMG));
             for (SMGBlock.Transaction tx : transactionsSoftMGSorted) {
-                if (softBlock.getHeight() == 0 || softBlock.getID() == Genesis.GENESIS_BLOCK_ID) {
+                if (_height_sft_ == 0 || softBlock.getID() == Genesis.GENESIS_BLOCK_ID) {
                     createNetwork(tx.getReceiver(), tx.getSender(), tx.getStamp(), 0);
                 } else {
                     if (!blocksForCheck.contains(tx.getSoftMGBlockID())) {
                         blocksForCheck.add(tx.getSoftMGBlockID());
                     }
                     // Bad transaction available HERE =====|
-                    if (!ExcludesGMS.check(tx, softBlock.getHeight())) {
+                    if (!ExcludesGMS.check(tx, _height_sft_)) {
                         // ===================================[AUTOFUCK]=|
                         if (!checkForce(tx)) {
-                            throw new HGException((softBlock.getHeight() + ": Genesis transaction wrong: " + tx.getID() + " > " + tx.getReceiver()) + " : " + tx.getAmount() + " \n" + tx.toString(), softBlock.getHeight());
+                            throw new HGException((_height_sft_ + ": Genesis transaction wrong: " + tx.getID() + " > " + tx.getReceiver()) + " : " + tx.getAmount() + " \n" + tx.toString(), _height_sft_);
                         }
                     }
                 }
@@ -1427,9 +1432,9 @@ public class SoftMG {
                 checkBlockIsSuccess(ID);
             }
             checkBlockIsSuccess(softBlock.getID());
-            setLastForgedBlockHeight(softBlock.getGeneratorID(), softBlock.getHeight());
+            setLastForgedBlockHeight(softBlock.getGeneratorID(), _height_sft_);
             int limit = Constants.MAX_NAGRADNIH - retvalue.getPayouts().size();
-            List<SMGBlock.Payout> finishPayouts = getUnpayedSoftMGTransactions(softBlock.getHeight(), limit);
+            List<SMGBlock.Payout> finishPayouts = getUnpayedSoftMGTransactions(_height_sft_, limit);
             retvalue.getPayouts().addAll(finishPayouts);
         } catch (Exception ex) {
             Logger.logErrorMessage(ex.getMessage(), ex); // More details on exception's source
